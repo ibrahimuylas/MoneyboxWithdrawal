@@ -4,20 +4,23 @@ using System;
 
 namespace Moneybox.App.Features
 {
-    public class WithdrawMoney
+    public class WithdrawMoney : MoneyBase, IWithdrawMoney
     {
-        private IAccountRepository accountRepository;
-        private INotificationService notificationService;
 
-        public WithdrawMoney(IAccountRepository accountRepository, INotificationService notificationService)
+        public WithdrawMoney(IAccountRepository accountRepository) : base(accountRepository)
         {
-            this.accountRepository = accountRepository;
-            this.notificationService = notificationService;
         }
 
-        public void Execute(Guid fromAccountId, decimal amount)
+        public bool Execute(Guid accountId, decimal amount)
         {
-            // TODO:
+            var account = this.accountRepository.GetAccountById(accountId);
+
+            if (account.Withdraw(amount))
+            {
+                base.accountRepository.Update(account);
+            }
+
+            return true;
         }
     }
 }
